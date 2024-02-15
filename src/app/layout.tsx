@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+// import "@splidejs/react-splide/css";
+// import "@splidejs/react-splide/css/core";
+// import "@splidejs/react-splide/css/skyblue";
+// import "@splidejs/react-splide/css/sea-green";
 import "./globals.css";
+import UIHeader from "~/components/UIHeader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="relative max-w-full w-full z-50">
+          <UIHeader />
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
