@@ -35,10 +35,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className=" pb-32">
+      <div className="pb-32">
         <UIListMovie
           movieData={dataMovie}
-          lengthList={7}
+          lengthList={10}
           title="Popular on Netflix"
         />
 

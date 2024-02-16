@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// import "@splidejs/react-splide/css";
-// import "@splidejs/react-splide/css/core";
-// import "@splidejs/react-splide/css/skyblue";
-// import "@splidejs/react-splide/css/sea-green";
+import "@splidejs/react-splide/css";
+import "@splidejs/react-splide/css/core";
+import "@splidejs/react-splide/css/skyblue";
+import "@splidejs/react-splide/css/sea-green";
 import "./globals.css";
 import UIHeader from "~/components/UIHeader";
 

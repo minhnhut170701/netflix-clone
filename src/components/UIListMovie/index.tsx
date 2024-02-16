@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import Image from "next/image";
 import { MovieItem } from "~/modules/movieItem.type";
 
@@ -10,8 +11,6 @@ interface UIListMovieProps {
 }
 
 function UIListMovie({ movieData, title, lengthList }: UIListMovieProps) {
-  const [transForm, setTransForm] = useState(0);
-  const [titleCheck, setTitleCheck] = useState(title);
   const [movieDetail, setMovieDetail] = useState<MovieItem | null>(null);
   const [positionModal, setPositionModal] = useState({ x: 0, y: 0 });
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -44,63 +43,116 @@ function UIListMovie({ movieData, title, lengthList }: UIListMovieProps) {
     // add a delay before showing the modal
     const id = setTimeout(() => {
       setMovieDetail(movie);
-    }, 500); // adjust the delay as needed
+    }, 700); // adjust the delay as needed
 
     setTimeoutId(id);
   };
 
-  useEffect(() => {
-    // add a mousemove event listener when the component mounts
-    const handleMouseMove = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-
-      // check if the mouse is over the component
-      if (!target.closest(".ui-list-movie")) {
-        setMovieDetail(null);
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    // remove the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
   return (
     <div
-      className="max-w-full w-screen p-8 relative"
-      onMouseLeave={() => setMovieDetail(null)}
+      className=" w-full p-8 relative h-[300px] md:h-[250px] lg:h-[200px] "
+      onMouseLeave={() => {
+        setMovieDetail(null);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      }}
     >
       <h3 className="text-white text-xl font-bold uppercase my-4">{title}</h3>
       <div className="w-full">
-        <div
-          className={`flex space-x-1 w-full`}
-          style={{ transform: `translateX(${transForm}px)` }}
-        >
-          {movieData
-            .slice(0, lengthList)
-            .map((movie: MovieItem, index: number) => (
+        <div className={`relative`}>
+          <Splide
+            hasTrack={false}
+            options={{
+              rewind: true,
+              // perPage: 5,
+              // perMove: 2,
+              loop: true,
+              drag: false,
+              gap: "5px",
+              width: "100%",
+              pagination: false,
+              fixedWidth: 210,
+              fixedHeight: 180,
+            }}
+          >
+            <SplideTrack>
+              {movieData
+                .slice(0, lengthList)
+                .map((movie: MovieItem, index: number) => (
+                  <SplideSlide key={index} className="group cursor-pointer">
+                    <div
+                      onMouseEnter={(event: any) =>
+                        handlePosition(movie, event)
+                      }
+                    >
+                      <Image
+                        src={movie.img}
+                        alt={movie.name}
+                        width={500}
+                        height={500}
+                        className="transition-all duration-1000 hover:scale-110 w-[33%] "
+                      />
+                    </div>
+                  </SplideSlide>
+                ))}
+            </SplideTrack>
+            <div className="splide__arrows  ">
               <div
-                key={index}
-                className="group w-[25%] lg:w-[33%] cursor-pointer h-[100px] overflow-hidden"
-                onMouseEnter={(event) => handlePosition(movie, event)}
-                onMouseLeave={() => setMovieDetail(null)}
+                className="absolute bg-gray-50 bg-opacity-40 top-0 -right-[3.1rem] w-[80px] h-[118px] z-40"
+                onMouseEnter={() => {
+                  setMovieDetail(null);
+                  if (timeoutId) {
+                    clearTimeout(timeoutId);
+                  }
+                }}
               >
-                <Image
-                  src={movie.img}
-                  alt={movie.name}
-                  width={500}
-                  height={500}
-                  className="transition-all duration-500  w-full"
-                />
+                <button className="splide__arrow splide__arrow--next w-full h-full outline-none">
+                  Next
+                </button>
               </div>
-            ))}
+              <div
+                className="absolute bg-gray-50 bg-opacity-40  top-0 -left-10 w-[80px] h-[118px] z-40"
+                onMouseEnter={() => {
+                  setMovieDetail(null);
+                  if (timeoutId) {
+                    clearTimeout(timeoutId);
+                  }
+                }}
+              >
+                <button className="splide__arrow splide__arrow--prev w-full h-full outline-none">
+                  Prev
+                </button>
+              </div>
+            </div>
+          </Splide>
+          {/* <div
+            className="absolute top-0 flex items-center right-0 justify-center w-12 h-full bg-gray-50 bg-opacity-40 text-white cursor-pointer splide__arrows"
+            onMouseEnter={(e) => {
+              setMovieDetail(null);
+              e.stopPropagation();
+            }}
+          >
+            <button
+              onClick={() => {
+                if (transForm < (lengthList - 7) * 200) {
+                  // adjust the number based on your item width and number of items per view
+                  setTransForm((prev) => (prev += 200));
+                } else {
+                  setTransForm(0);
+                }
+              }}
+            >
+              Next
+            </button>
+          </div>
+          <div className="absolute bg-gray-50 bg-opacity-40 top-0 -right-[3.1rem] w-[50px] h-full z-40" />
+          <div className="absolute bg-gray-50 bg-opacity-40  top-0 -left-10 w-[50px] h-full z-40" /> */}
         </div>
+
         {movieDetail && (
           <div
-            className="absolute scale-125 z-50 w-[200px]  text-white shadow-xl rounded-lg bg-black text-xs transition-all duration-500 delay-200 "
+            className="absolute scale-125 z-50 w-[200px]  text-white shadow-xl rounded-lg bg-black text-xs"
             style={{
               zIndex: 99999,
               left: positionModal.x - 10, // subtract half the width of the modal
@@ -108,7 +160,6 @@ function UIListMovie({ movieData, title, lengthList }: UIListMovieProps) {
             }}
             onMouseEnter={(event) => {
               event.stopPropagation();
-              setMovieDetail(movieDetail);
             }}
             onMouseLeave={() => setMovieDetail(null)}
           >
@@ -138,12 +189,6 @@ function UIListMovie({ movieData, title, lengthList }: UIListMovieProps) {
             </div>
           </div>
         )}
-
-        {/* <div className="absolute top-0 flex items-center right-0 w-30 h-full bg-black text-white">
-          <button onClick={() => setTransForm((prev) => (prev += 20))}>
-            Next
-          </button>
-        </div> */}
       </div>
     </div>
   );
